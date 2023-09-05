@@ -42,6 +42,15 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    """
+    Clean a DataFrame by removing duplicate rows.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to be cleaned.
+
+    Returns:
+    pandas.DataFrame: A DataFrame with duplicate rows removed.
+    """
     # Duplicates clearn
     df = df.drop_duplicates()
     return df
