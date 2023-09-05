@@ -18,6 +18,18 @@ from sklearn.multioutput import MultiOutputClassifier
 import pickle
 
 def load_data(database_filepath):
+    """
+    Load data from a SQLite database and prepare it for machine learning.
+
+    Parameters:
+    database_filepath (str): The filepath to the SQLite database.
+
+    Returns:
+    tuple: A tuple containing three elements - X (messages), y (categories), and category_names.
+    - X (pandas.Series): The messages from the database.
+    - y (pandas.DataFrame): The categories from the database.
+    - category_names (list): The names of the categories.
+    """
     engine = create_engine('sqlite:///'+database_filepath)
     df = pd.read_sql_table('DisasterResponse', engine)
     X = df.message
@@ -26,6 +38,15 @@ def load_data(database_filepath):
     return X, y, category_names 
 
 def tokenize(text):
+    """
+    Tokenize and preprocess a text string.
+
+    Parameters:
+    text (str): The input text to be tokenized.
+
+    Returns:
+    list of str: A list of cleaned and lemmatized tokens from the input text.
+    """
     url_regex = 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
     detected_urls = re.findall(url_regex, text)
     for url in detected_urls:
@@ -43,6 +64,12 @@ def tokenize(text):
 
 
 def build_model():
+    """
+    Build and configure a machine learning model pipeline.
+
+    Returns:
+    sklearn.model_selection.GridSearchCV: A grid search cross-validation model.
+    """
     pipeline = Pipeline([
         ('vect', CountVectorizer(tokenizer=tokenize)),
         ('tfidf', TfidfTransformer()),
@@ -59,16 +86,50 @@ def build_model():
 
 
 def evaluate_model(model, X_test, y_test, category_names):
+    """
+    Evaluate a machine learning model's performance and print a classification report.
+
+    Parameters:
+    model (sklearn.model_selection.GridSearchCV): The trained machine learning model.
+    X_test (pandas.Series): Test set messages.
+    y_test (pandas.DataFrame): Test set categories.
+    category_names (list): Names of the categories.
+
+    Returns:
+    None
+    """
     y_pred = model.predict(X_test)
     class_report = classification_report(y_test, y_pred, target_names=category_names)
     print(class_report)
 
 def save_model(model, model_filepath):
+    """
+    Save a trained machine learning model to a file using pickle.
+
+    Parameters:
+    model (object): The trained machine learning model to be saved.
+    model_filepath (str): The filepath where the model should be saved.
+
+    Returns:
+    None
+    """
     with open(model_filepath, 'wb') as file:
         pickle.dump(model, file)
 
 
 def main():
+     """
+    Main function for training, evaluating, and saving a machine learning model.
+
+    Usage:
+    python train_classifier.py <database_filepath> <model_filepath>
+
+    Parameters:
+    None
+
+    Returns:
+    None
+    """
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
