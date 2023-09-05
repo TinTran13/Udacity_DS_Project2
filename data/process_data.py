@@ -57,11 +57,33 @@ def clean_data(df):
     
 
 def save_data(df, database_filename):
+    """
+    Save a DataFrame to a SQLite database.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to be saved to the database.
+    database_filename (str): The filename of the SQLite database.
+
+    Returns:
+    None
+    """
     engine = create_engine('sqlite:///'+database_filename)
     df.to_sql('DisasterResponse', engine,if_exists = 'replace', index=False)  
 
 
 def main():
+    """
+    Main function for loading, cleaning, and saving data to a database.
+
+    Usage:
+    python process_data.py <messages_filepath> <categories_filepath> <database_filepath>
+
+    Parameters:
+    None
+
+    Returns:
+    None
+    """
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
